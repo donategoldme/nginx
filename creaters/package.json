@@ -1,0 +1,34 @@
+{
+  "name": "standard_donates",
+  "version": "0.0.1",
+  "description": "widget for viewing donates on screen",
+  "main": "standard.js",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "-"
+  },
+  "author": "Iliya Pershin",
+  "license": "ISC",
+  "dependencies": {
+    "centrifuge": "^1.4.3",
+    "dot": "^1.1.1",
+    "fs": "0.0.1-security",
+    "whatwg-fetch": "^2.0.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.0",
+    "babel-preset-es2015": "^6.22.0",
+    "clean-webpack-plugin": "^0.1.15",
+    "css-loader": "^0.26.1",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^6.0.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^2.2.1"
+  }
+}
