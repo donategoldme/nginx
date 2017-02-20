@@ -9,6 +9,9 @@ export class Queue {
     addDonate(donate) {
         this.q.push(donate);
     }
+    addDonateVoice(donate) {
+
+    }
     getNext() {
         return this.q.shift();
     }
@@ -29,7 +32,6 @@ export class Pref {
         this.newPref(pref);
     }
     newTmp() {
-        console.log(this.pref.view_template);
         let tmp = this.pref.view_template.replace("{user}", "{{=it.user}}").replace("{amount}", "{{=it.amount}}")
         .replace("{message}", "{{=it.message}}");
         this.tempFn = doT.template(tmp);
@@ -39,7 +41,6 @@ export class Pref {
         this.newTmp();
         this.setAudio();
         this.setPic();
-        console.log(this.tempFn);
     }
     render(data) {
         let out = this.getPic();
@@ -47,34 +48,36 @@ export class Pref {
         '</div>';
         return out;
     }
+    renderForAudio(data) {
+        return this.tempFn({'user': data.nickname, amount: data.money, message: data.message})
+    }
     getViewTime() {
-        if (this.pref.view_time > this.audioFile.duration) {
-            return this.pref.view_time*1000;
-        }
-        return this.audioFile.duration;
+        return Math.max(this.audioFile.duration*1000, this.pref.view_time*1000);
     }
     getVolume() {
-        return this.pref.sound_volume;
+        return this.pref.sound_volume / 100;
     }
     setAudio() {
         if (!this.pref.sound) {
             return
         }
         this.audioFile = new Audio(`/uploads/${this.pref.user_id}/sound/${this.pref.sound}`)
-        this.audioFile.volume = this.pref.sound_volume / 100;
+        this.audioFile.volume = this.getVolume();
         this.audioFile.load();
     }
     audioPlay() {
         if (!this.audioFile) {
-            return
+            return Promise((s) => s());
         }
-        this.audioFile.play()
+        return this.audioFile.play();
     }
     setPic() {
         if (!this.pref.pic) {
             return
         }
-        this.pic = `/uploads/${this.pref.user_id}/pic/${this.pref.pic}`
+        const pic = new Image();
+        pic.src = `/uploads/${this.pref.user_id}/pic/${this.pref.pic}`;
+        this.pic = `/uploads/${this.pref.user_id}/pic/${this.pref.pic}`;
     }
     getPic() {
         if (this.pic) {
@@ -82,4 +85,49 @@ export class Pref {
         }
         return '';
     }
+    needVoice(amount) {
+        return this.pref.voice_cost <= amount && this.pref.sound_volume > 5;
+    }
+    durationSound() {
+        return (1000 + this.audioFile.duration * 1000);
+    }
+    muted() {
+        return this.pref.sound_volume < 10;
+    }
+}
+
+function addWithAudio(queue, data, text) {
+    request("/api/widgets/standard/donates/" + data.id + "?text=" + text).then(() => {
+    var au = new Audio("/uploads/voice/" + data.id + ".mp3");
+    var d = data;
+    au.load();
+    d.voicer = true;
+    d.audioFile = au;
+    queue.addDonate(d);
+    })
+}
+
+export function getSwitcher(queue, pref) {
+  return (res) => {
+    const data = res.data;
+    switch (data.type) {
+      case "add_standard_donate":
+        if (pref.needVoice(data.donate.money)) {
+            addWithAudio(queue, data.donate, pref.renderForAudio(data.donate));
+        } else {
+            queue.addDonate(data.donate);
+        }
+        break;
+      case "save_standard_donate":
+        queue.filterDonates(data.donate.id);
+        break;
+      case "standard_prefs_save":
+        if (data.standard.active) {
+          pref.newPref(data.standard);
+        }
+        break;
+      default:
+        console.log("no switcher", data)
+    }
+  }
 }
