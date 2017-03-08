@@ -5,11 +5,12 @@ body {
 }
 
 .chats {
-    width: 500px;
+    // width: 500px;
     font-size: 16px;
     font-family: 'Pangolin', cursive;
     word-wrap: break-word;
     word-break: break-all;
+    overflow: hidden;
 }
 
 .messageWrap {
@@ -17,14 +18,13 @@ body {
 }
 
 .full-message {
-  width: 100%;
   float: left;
   background-color: #1a1a1a;
-//   border-bottom: 2px #f1f1f1 solid;
+  // border-bottom: 2px #f1f1f1 solid;
   padding-left: 2px;
   padding-right: 2px;
   padding-bottom: 5px;
-  font-size: 16px;
+  width:500px;
 }
 
 .nickname-badge {
@@ -33,6 +33,7 @@ body {
 }
 
 .badge {
+  vertical-align: middle;
   float: left;
   padding: 0 4px 0px 0px;
   height: 19px;
@@ -60,5 +61,6 @@ body {
   color: #b2b2b2;
 }
 .smile {
+  vertical-align: middle;
   height: 25px;
 }
