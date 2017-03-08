@@ -14,9 +14,17 @@ export default function connectCGO(userId, chan, username, timestamp, token, swi
       info: '',
       token: token,
       authHeaders: {'X-TOKEN-KEY': getToken()},
-      authEndpoint: '/api/auth/centrifugo'
+      authEndpoint: '/api/auth/centrifugo',
+      debug: true,
   });
-  cgo.subscribe(`$${userId}/${chan}`, switcher);
+  cgo.on('connect', (context) => console.log('connect', context));
+  cgo.on('error', function(error) {
+    console.log(error)
+  });
+  cgo.on('disconnect', (context) => console.log('disconnect', context));
+  cgo.subscribe(`$${userId}/${chan}`, switcher).
+    on('join', (message) => console.log('join')).
+    on('leave', (message) => console.log('leave'));
   cgo.connect();
   return cgo;
 }
