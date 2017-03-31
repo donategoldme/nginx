@@ -32,6 +32,9 @@ export class Pref {
         this.newPref(pref);
     }
     newTmp() {
+        if (this.pref.view_template === "") {
+            this.pref.view_template = `{user} прислал {amount} рублей и сообщает: {message}`
+        }
         let tmp = this.pref.view_template.replace("{user}", "{{=it.user}}").replace("{amount}", "{{=it.amount}}")
         .replace("{message}", "{{=it.message}}");
         this.tempFn = doT.template(tmp);
@@ -49,7 +52,7 @@ export class Pref {
         return out;
     }
     renderForAudio(data) {
-        return this.tempFn({'user': data.nickname, amount: data.money, message: data.message})
+        return this.tempFn({'user': data.nickname, 'amount': data.money, 'message': data.message})
     }
     getViewTime() {
         return Math.max(this.audioFile.duration*1000, this.pref.view_time*1000);
