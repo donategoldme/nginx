@@ -16,9 +16,11 @@
   "license": "ISC",
   "dependencies": {
     "centrifuge": "^1.4.5",
+    "chart.js": "^2.5.0",
     "dot": "^1.1.1",
     "fs": "0.0.1-security",
     "react": "^15.4.2",
+    "react-chartjs-2": "^2.0.5",
     "react-dom": "^15.4.2",
     "whatwg-fetch": "^2.0.2"
   },
